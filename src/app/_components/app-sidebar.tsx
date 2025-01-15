@@ -52,16 +52,24 @@ export function AppSidebar() {
                         <SidebarMenu>
                             {dataQuery.data?.map((translation) => (
                                 <SidebarMenuItem key={translation.id}>
-                                    <SidebarMenuButton className="w-full justify-start gap-2 hover:bg-accent">
-                                        <Link
-                                            href={`/translate/${translation.id}`}
-                                            prefetch={true}
-                                        >
-                                            <FileText className="h-4 w-4" />
-                                            {translation.name ??
-                                                "translating.."}
-                                        </Link>
-                                    </SidebarMenuButton>
+                                    <Link
+                                        href={`/translate/${translation.id}`}
+                                        prefetch={true}
+                                    >
+                                        <SidebarMenuButton className="w-full justify-start gap-2 hover:bg-accent">
+                                            <FileText className="h-4 w-4 flex-shrink-0" />
+                                            <span
+                                                className="truncate"
+                                                title={
+                                                    translation.name ??
+                                                    "translated doc"
+                                                }
+                                            >
+                                                {translation.name ??
+                                                    "translated doc"}
+                                            </span>
+                                        </SidebarMenuButton>
+                                    </Link>
                                 </SidebarMenuItem>
                             ))}
                         </SidebarMenu>
