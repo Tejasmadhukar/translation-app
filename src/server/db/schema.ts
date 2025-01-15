@@ -7,6 +7,7 @@ import {
     text,
 } from "drizzle-orm/sqlite-core";
 import { type AdapterAccount } from "next-auth/adapters";
+import { nanoid } from "nanoid";
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -18,11 +19,19 @@ export const createTable = sqliteTableCreator(
     (name) => `translation-app_${name}`,
 );
 
-export const posts = createTable(
-    "post",
+export const translations = createTable(
+    "translation",
     {
-        id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+        id: text("id")
+            .notNull()
+            .primaryKey()
+            .$defaultFn(() => nanoid()),
+        status: text("status", { enum: ["loading", "completed", "failed"] })
+            .notNull()
+            .default("loading"),
         name: text("name", { length: 256 }),
+        inputDoc: text("input_document"),
+        translatedDoc: text("translated_document"),
         createdById: text("created_by", { length: 255 })
             .notNull()
             .references(() => users.id),
@@ -39,11 +48,18 @@ export const posts = createTable(
     }),
 );
 
+export const translationRelations = relations(translations, ({ one }) => ({
+    createdBy: one(users, {
+        fields: [translations.createdById],
+        references: [users.id],
+    }),
+}));
+
 export const users = createTable("user", {
     id: text("id", { length: 255 })
         .notNull()
         .primaryKey()
-        .$defaultFn(() => crypto.randomUUID()),
+        .$defaultFn(() => nanoid()),
     name: text("name", { length: 255 }),
     email: text("email", { length: 255 }).notNull(),
     emailVerified: int("email_verified", {
@@ -54,6 +70,7 @@ export const users = createTable("user", {
 
 export const usersRelations = relations(users, ({ many }) => ({
     accounts: many(accounts),
+    translations: many(translations),
 }));
 
 export const accounts = createTable(
