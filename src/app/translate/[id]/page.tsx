@@ -1,6 +1,7 @@
 import { api } from "@/trpc/server";
 import TranslateFail from "./_components/translate-failed";
 import TranslateLoading from "./_components/translate-loading";
+import TranslatedDocument from "./_components/translated-document";
 
 export default async function Translate({
     params,
@@ -17,7 +18,7 @@ export default async function Translate({
     }
 
     if (translateObject.status == "loading") {
-        return <TranslateLoading />;
+        return <TranslateLoading translateId={translateObject.id} />;
     }
 
     if (translateObject.status == "failed") {
@@ -26,5 +27,9 @@ export default async function Translate({
         );
     }
 
-    return <h1>Translated Document</h1>;
+    return (
+        <TranslatedDocument
+            content={translateObject.translatedDoc ?? "Could not translate"}
+        />
+    );
 }

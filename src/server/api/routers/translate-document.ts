@@ -4,6 +4,7 @@ import { TRPCError } from "@trpc/server";
 import { protectedProcedure } from "../trpc";
 import { translations as translationsDatabase } from "@/server/db/schema";
 import { eq } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 const openai = new OpenAI();
 
@@ -19,12 +20,14 @@ export type DocumentType = z.infer<typeof zodDocumentType>;
 // Helper function to parse is_done tag
 const parseIsDone = (responseText: string): boolean => {
     const match = /<is_done>(.*?)<\/is_done>/s.exec(responseText);
+    //@ts-expect-error tysa=0sa
     return match ? match[1].trim().toLowerCase() === "yes" : false;
 };
 
 // Helper function to extract translation content
 const extractTranslation = (responseText: string): string => {
     const match = /<translation>(.*?)<\/translation>/s.exec(responseText);
+    //@ts-expect-error tysa=0sa
     return match ? match[1].trim() : "";
 };
 
@@ -315,6 +318,8 @@ export const translateDocument = protectedProcedure
                     name: title,
                 })
                 .where(eq(translationsDatabase.id, input.documentId));
+
+            revalidatePath("/");
         } catch (error) {
             await ctx.db
                 .update(translationsDatabase)
@@ -322,6 +327,9 @@ export const translateDocument = protectedProcedure
                     status: "failed",
                 })
                 .where(eq(translationsDatabase.id, input.documentId));
+
+            revalidatePath("/");
+
             throw new TRPCError({
                 code: "INTERNAL_SERVER_ERROR",
                 message: "Please try again",
@@ -340,6 +348,7 @@ const getTranslationPreview = (
 ): string => {
     const firstContent = Object.values(translations)[0];
 
+    //@ts-expect-error tysa=0sa
     const lines = firstContent.split("\n").filter((line) => line.trim());
     const preview = lines.slice(0, 2).join(" "); // Get first 2 non-empty lines
 

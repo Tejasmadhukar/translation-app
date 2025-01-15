@@ -24,15 +24,10 @@ import {
     SidebarGroupLabel,
     SidebarGroupContent,
 } from "@/components/ui/sidebar";
-
-// Mock data for previous translations
-const previousTranslations = [
-    { id: 1, title: "English to Spanish", url: "/translate/1" },
-    { id: 2, title: "French to German", url: "/translate/2" },
-    { id: 3, title: "Japanese to Korean", url: "/translate/3" },
-];
+import { api } from "@/trpc/react";
 
 export function AppSidebar() {
+    const dataQuery = api.translationsRouter.getAll.useQuery();
     return (
         <Sidebar className="border-r">
             <SidebarHeader className="border-b px-4 py-2">
@@ -40,8 +35,6 @@ export function AppSidebar() {
             </SidebarHeader>
             <SidebarContent>
                 <div className="mt-3">
-                    {" "}
-                    {/* Added space above the New button */}
                     <SidebarMenu>
                         <SidebarMenuItem>
                             <Link href="/" passHref prefetch={true}>
@@ -57,18 +50,18 @@ export function AppSidebar() {
                     <SidebarGroupLabel>Previous Translations</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {previousTranslations.map((translation) => (
+                            {dataQuery.data?.map((translation) => (
                                 <SidebarMenuItem key={translation.id}>
-                                    <Link
-                                        href={translation.url}
-                                        passHref
-                                        prefetch={true}
-                                    >
-                                        <SidebarMenuButton className="w-full justify-start gap-2 hover:bg-accent">
+                                    <SidebarMenuButton className="w-full justify-start gap-2 hover:bg-accent">
+                                        <Link
+                                            href={`/translate/${translation.id}`}
+                                            prefetch={true}
+                                        >
                                             <FileText className="h-4 w-4" />
-                                            {translation.title}
-                                        </SidebarMenuButton>
-                                    </Link>
+                                            {translation.name ??
+                                                "translating.."}
+                                        </Link>
+                                    </SidebarMenuButton>
                                 </SidebarMenuItem>
                             ))}
                         </SidebarMenu>

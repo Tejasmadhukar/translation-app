@@ -89,10 +89,10 @@ export default function TranslateForm() {
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // @ts-expect-error I have more infromation than the compiler ?
         submitMutation.mutate({
             inputDocument: content,
             chapters: recordToArray(chapters),
+            // @ts-expect-error I have more infromation than the compiler ?
             documentType: documentType as DocumentType,
             documentId: nanoid(),
             targetLanguage,
@@ -100,8 +100,8 @@ export default function TranslateForm() {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <Card className="w-full max-w-2xl">
+        <form onSubmit={handleSubmit} className="w-full max-w-2xl">
+            <Card className="">
                 <CardHeader>
                     <CardTitle>Translate your content</CardTitle>
                 </CardHeader>

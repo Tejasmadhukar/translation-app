@@ -1,7 +1,25 @@
+"use client";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { api } from "@/trpc/react";
 import { Loader2 } from "lucide-react";
 
-export default function TranslateLoading() {
+export default function TranslateLoading({
+    translateId,
+}: {
+    translateId: string;
+}) {
+    const translationQuery = api.translationsRouter.getById.useQuery(
+        { translateId },
+        {
+            refetchInterval: 2000,
+            refetchIntervalInBackground: true,
+        },
+    );
+
+    if (translationQuery.data?.status != "loading") {
+        window.location.reload();
+    }
+
     return (
         <Card className="w-full max-w-2xl">
             <CardHeader>
