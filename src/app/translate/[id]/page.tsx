@@ -1,4 +1,6 @@
 import { api } from "@/trpc/server";
+import TranslateFail from "./_components/translate-failed";
+import TranslateLoading from "./_components/translate-loading";
 
 export default async function Translate({
     params,
@@ -11,15 +13,17 @@ export default async function Translate({
     });
 
     if (!translateObject) {
-        return <h1>No document found with this id</h1>;
+        return <TranslateFail errorMessage="No document found with this ID." />;
     }
 
     if (translateObject.status == "loading") {
-        return <h1>Spinner</h1>;
+        return <TranslateLoading />;
     }
 
     if (translateObject.status == "failed") {
-        return <h1>This translation encountered an error please try again</h1>;
+        return (
+            <TranslateFail errorMessage="This translation job encountered an error." />
+        );
     }
 
     return <h1>Translated Document</h1>;
