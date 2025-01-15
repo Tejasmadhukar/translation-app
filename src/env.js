@@ -15,6 +15,7 @@ export const env = createEnv({
         EMAIL_FROM: z.string().email(),
         GOOGLE_CLIENT_ID: z.string(),
         GOOGLE_CLIENT_SECRET: z.string(),
+        OPENAI_API_KEY: z.string(),
         DATABASE_URL: z.string().url(),
         DATABASE_AUTH_TOKEN: z.string(),
         NODE_ENV: z
@@ -41,6 +42,7 @@ export const env = createEnv({
         EMAIL_SERVER: process.env.EMAIL_SERVER,
         GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
         GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET,
+        OPENAI_API_KEY: process.env.OPENAI_API_KEY,
         DATABASE_URL: process.env.DATABASE_URL,
         NODE_ENV: process.env.NODE_ENV,
         DATABASE_AUTH_TOKEN: process.env.DATABASE_AUTH_TOKEN,

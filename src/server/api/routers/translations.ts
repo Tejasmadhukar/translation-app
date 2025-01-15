@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { translateDocument } from "./translate-document";
 
 export const translationsRouter = createTRPCRouter({
     getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -17,4 +18,5 @@ export const translationsRouter = createTRPCRouter({
             });
             return translate;
         }),
+    translateDocument,
 });
