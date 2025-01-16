@@ -22,6 +22,7 @@ import {
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { nanoid } from "nanoid";
+import TranslateLoading from "../translate/[id]/_components/translate-loading";
 
 function recordToArray(record: Record<number, string>): string[] {
     const result: string[] = [];
@@ -46,7 +47,7 @@ export default function TranslateForm() {
 
     const submitMutation = api.translationsRouter.translateDocument.useMutation(
         {
-            onMutate(variables) {
+            onSettled(data, error, variables, context) {
                 router.push(`/translate/${variables.documentId}`);
             },
         },
@@ -87,17 +88,24 @@ export default function TranslateForm() {
         return chapterInputs;
     };
 
+    let currId = "";
+
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        currId = nanoid();
         submitMutation.mutate({
             inputDocument: content,
             chapters: recordToArray(chapters),
             // @ts-expect-error I have more infromation than the compiler ?
             documentType: documentType as DocumentType,
-            documentId: nanoid(),
+            documentId: currId,
             targetLanguage,
         });
     };
+
+    if (submitMutation.isPending) {
+        <TranslateLoading translateId={currId} />;
+    }
 
     return (
         <form onSubmit={handleSubmit} className="w-full max-w-2xl">
