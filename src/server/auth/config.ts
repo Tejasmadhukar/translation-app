@@ -1,6 +1,5 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
-import EmailProvider from "next-auth/providers/nodemailer";
 import { db } from "@/server/db";
 import {
     accounts,

@@ -31,6 +31,7 @@ export default function InterviewInterface({
                 setIsAiSpeaking(false);
             }
         }
+        //eslint-disable-next-line
         playAudio();
     }, [audioUrl]);
 

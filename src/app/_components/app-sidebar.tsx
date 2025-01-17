@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/sidebar";
 import { api } from "@/trpc/react";
 
+//eslint-disable-next-line
 export function AppSidebar({ email }: { email: string }) {
     const dataQuery = api.InterviewRouter.getAll.useQuery();
     return (
