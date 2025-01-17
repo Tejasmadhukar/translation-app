@@ -2,6 +2,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { interviews } from "@/server/db/schema";
 import { TRPCError } from "@trpc/server";
+import { revalidatePath } from "next/cache";
 
 export const InterviewRouter = createTRPCRouter({
     getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -38,6 +39,7 @@ export const InterviewRouter = createTRPCRouter({
                 code: "INTERNAL_SERVER_ERROR",
             });
         }
+        revalidatePath("/")
         return newInterview[0].id;
     }),
 });

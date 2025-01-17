@@ -1,6 +1,7 @@
 import { api } from "@/trpc/server";
 import InterviewFail from "./_components/fail";
 import InterviewReview from "./_components/interview-review";
+import InterviewInterface from "./_components/interview-interface";
 
 export default async function InterviewPage({
     params,
@@ -20,7 +21,7 @@ export default async function InterviewPage({
     // Add case to continue the interview if tab is closed
     // Add back the interview client comp if interview is not finished
     if (interviewObject.status == "ongoing") {
-        return <h1>Not implemented</h1>;
+        return <InterviewInterface interviewId={interviewId} />;
     }
 
     return (
