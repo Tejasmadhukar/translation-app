@@ -15,51 +15,65 @@ import { nanoid } from "nanoid";
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const createTable = sqliteTableCreator(
-    (name) => `translation-app_${name}`,
-);
+export const createTable = sqliteTableCreator((name) => `konnect-poc_${name}`);
 
-export const translations = createTable(
-    "translation",
-    {
-        id: text("id")
-            .notNull()
-            .primaryKey()
-            .$defaultFn(() => nanoid()),
-        status: text("status", { enum: ["loading", "completed", "failed"] })
-            .notNull()
-            .default("loading"),
-        name: text("name", { length: 256 }),
-        inputDoc: text("input_document"),
-        translatedDoc: text("translated_document"),
-        createdById: text("created_by", { length: 255 })
-            .notNull()
-            .references(() => users.id),
-        createdAt: int("created_at", { mode: "timestamp" })
-            .default(sql`(unixepoch())`)
-            .notNull(),
-        updatedAt: int("updatedAt", { mode: "timestamp" }).$onUpdate(
-            () => new Date(),
-        ),
-    },
-    (example) => ({
-        createdByIdIdx: index("created_by_idx").on(example.createdById),
-        nameIndex: index("name_idx").on(example.name),
+export const interviewMessages = createTable("interview_message", {
+    id: text("id", { length: 255 })
+        .notNull()
+        .primaryKey()
+        .$defaultFn(() => nanoid()),
+    role: text("role", { enum: ["assistant", "user", "system"] }).notNull(),
+    content: text("content").notNull(),
+    interviewId: text("interview_id", { length: 255 })
+        .notNull()
+        .references(() => interviews.id),
+    createdAt: int("created_at", { mode: "timestamp" })
+        .default(sql`(unixepoch())`)
+        .notNull(),
+});
+
+export type InterviewMessageType = typeof interviewMessages.$inferSelect;
+
+export const interviewMessagesRelations = relations(
+    interviewMessages,
+    ({ one }) => ({
+        interview: one(interviews, {
+            fields: [interviewMessages.interviewId],
+            references: [interviews.id],
+        }),
     }),
 );
 
-export const translationRelations = relations(translations, ({ one }) => ({
+export const interviews = createTable("interview", {
+    id: text("id", { length: 255 })
+        .notNull()
+        .primaryKey()
+        .$defaultFn(() => nanoid()),
+    title: text("title", { length: 256 }),
+    status: text("status", { enum: ["ongoing", "completed"] })
+        .notNull()
+        .default("ongoing"),
+    userId: text("user_id", { length: 255 })
+        .notNull()
+        .references(() => users.id),
+    createdAt: int("created_at", { mode: "timestamp" })
+        .default(sql`(unixepoch())`)
+        .notNull(),
+});
+
+export const interviewRelations = relations(interviews, ({ one, many }) => ({
     createdBy: one(users, {
-        fields: [translations.createdById],
+        fields: [interviews.userId],
         references: [users.id],
     }),
+    messages: many(interviewMessages),
 }));
 
 export const users = createTable("user", {
     id: text("id", { length: 255 })
         .notNull()
         .primaryKey()
-        .$defaultFn(() => nanoid()),
+        .$defaultFn(() => crypto.randomUUID()),
     name: text("name", { length: 255 }),
     email: text("email", { length: 255 }).notNull(),
     emailVerified: int("email_verified", {
@@ -70,7 +84,7 @@ export const users = createTable("user", {
 
 export const usersRelations = relations(users, ({ many }) => ({
     accounts: many(accounts),
-    translations: many(translations),
+    interviews: many(interviews),
 }));
 
 export const accounts = createTable(

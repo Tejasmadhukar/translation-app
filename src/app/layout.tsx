@@ -14,8 +14,8 @@ import { User } from "lucide-react";
 import SidebarToggle from "./_components/sidebar-toggle";
 
 export const metadata: Metadata = {
-    title: "Translation app",
-    description: "Thothica's translation app",
+    title: "Konnect POC",
+    description: "Demo app for Konnect",
     icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
@@ -29,7 +29,9 @@ export default async function RootLayout({
                 <TRPCReactProvider>
                     {session ? (
                         <SidebarProvider>
-                            <AppSidebar />
+                            <AppSidebar
+                                email={session.user.email ?? "user@example.com"}
+                            />
                             <main className="min-h-screen w-full">
                                 <SidebarToggle />
                                 {children}

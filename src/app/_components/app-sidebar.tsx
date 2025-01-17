@@ -26,12 +26,12 @@ import {
 } from "@/components/ui/sidebar";
 import { api } from "@/trpc/react";
 
-export function AppSidebar() {
-    const dataQuery = api.translationsRouter.getAll.useQuery();
+export function AppSidebar({ email }: { email: string }) {
+    const dataQuery = api.InterviewRouter.getAll.useQuery();
     return (
         <Sidebar className="border-r">
             <SidebarHeader className="border-b px-4 py-2">
-                <h2 className="text-lg font-semibold">Thothica Translate</h2>
+                <h2 className="text-lg font-semibold">Konnect AI Interview</h2>
             </SidebarHeader>
             <SidebarContent>
                 <div className="mt-3">
@@ -47,13 +47,13 @@ export function AppSidebar() {
                     </SidebarMenu>
                 </div>
                 <SidebarGroup>
-                    <SidebarGroupLabel>Previous Translations</SidebarGroupLabel>
+                    <SidebarGroupLabel>Previous Interviews</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
-                            {dataQuery.data?.map((translation) => (
-                                <SidebarMenuItem key={translation.id}>
+                            {dataQuery.data?.map((interview, idx) => (
+                                <SidebarMenuItem key={interview.id}>
                                     <Link
-                                        href={`/translate/${translation.id}`}
+                                        href={`/interview/${interview.id}`}
                                         prefetch={true}
                                     >
                                         <SidebarMenuButton className="w-full justify-start gap-2 hover:bg-accent">
@@ -61,12 +61,12 @@ export function AppSidebar() {
                                             <span
                                                 className="truncate"
                                                 title={
-                                                    translation.name ??
-                                                    "translated doc"
+                                                    interview.title ??
+                                                    `title ${idx + 1}`
                                                 }
                                             >
-                                                {translation.name ??
-                                                    "translated doc"}
+                                                {interview.title ??
+                                                    `title ${idx + 1}`}
                                             </span>
                                         </SidebarMenuButton>
                                     </Link>

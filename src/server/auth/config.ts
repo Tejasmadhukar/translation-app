@@ -48,10 +48,6 @@ export const authConfig = {
          *
          * @see https://next-auth.js.org/providers/github
          */
-        EmailProvider({
-            server: env.EMAIL_SERVER,
-            from: env.EMAIL_FROM,
-        }),
         Google({
             clientId: env.GOOGLE_CLIENT_ID,
             clientSecret: env.GOOGLE_CLIENT_SECRET,

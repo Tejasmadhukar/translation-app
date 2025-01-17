@@ -1,7 +1,7 @@
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-export default function TranslateFail({
+export default function InterviewFail({
     errorMessage,
 }: {
     errorMessage: string;
@@ -9,9 +9,7 @@ export default function TranslateFail({
     return (
         <Card className="w-full max-w-2xl">
             <CardHeader>
-                <CardTitle className="text-destructive">
-                    Translation Failed
-                </CardTitle>
+                <CardTitle className="text-destructive">Failed</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center justify-center space-y-4 py-8">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
