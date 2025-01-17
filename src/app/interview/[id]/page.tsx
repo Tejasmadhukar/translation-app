@@ -8,7 +8,7 @@ export default async function InterviewPage({
     params: Promise<{ id: string }>;
 }) {
     const interviewId = (await params).id;
-    const interviewObject = await api.InterviewRouter.getById({ interviewId })
+    const interviewObject = await api.InterviewRouter.getById({ interviewId });
     const interviewMessages = await api.InterviewRouter.getAllMessages({
         interviewId,
     });
@@ -19,6 +19,9 @@ export default async function InterviewPage({
 
     // Add case to continue the interview if tab is closed
     // Add back the interview client comp if interview is not finished
+    if (interviewObject.status == "ongoing") {
+        return <h1>Not implemented</h1>;
+    }
 
     return (
         <main className="min-h-screen bg-gray-50">

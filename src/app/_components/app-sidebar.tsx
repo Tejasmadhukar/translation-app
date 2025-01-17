@@ -62,11 +62,11 @@ export function AppSidebar({ email }: { email: string }) {
                                                 className="truncate"
                                                 title={
                                                     interview.title ??
-                                                    `title ${idx + 1}`
+                                                    `interview ${idx + 1}`
                                                 }
                                             >
                                                 {interview.title ??
-                                                    `title ${idx + 1}`}
+                                                    `interview ${idx + 1}`}
                                             </span>
                                         </SidebarMenuButton>
                                     </Link>

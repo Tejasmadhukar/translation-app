@@ -7,7 +7,7 @@ export default function InterviewFail({
     errorMessage: string;
 }) {
     return (
-        <Card className="w-full max-w-2xl">
+        <Card className="">
             <CardHeader>
                 <CardTitle className="text-destructive">Failed</CardTitle>
             </CardHeader>

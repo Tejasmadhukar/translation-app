@@ -12,6 +12,7 @@ import { auth } from "@/server/auth";
 import { Button } from "@/components/ui/button";
 import { User } from "lucide-react";
 import SidebarToggle from "./_components/sidebar-toggle";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
     title: "Konnect POC",
@@ -36,6 +37,7 @@ export default async function RootLayout({
                                 <SidebarToggle />
                                 {children}
                             </main>
+                            <Toaster />
                         </SidebarProvider>
                     ) : (
                         <main className="flex min-h-screen items-center justify-center bg-gradient-to-r from-gray-200 via-gray-400 to-gray-600">

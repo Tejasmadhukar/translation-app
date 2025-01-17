@@ -1,5 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { interviews } from "@/server/db/schema";
+import { TRPCError } from "@trpc/server";
 
 export const InterviewRouter = createTRPCRouter({
     getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -26,4 +28,16 @@ export const InterviewRouter = createTRPCRouter({
             });
             return messages;
         }),
+    create: protectedProcedure.mutation(async ({ ctx }) => {
+        const newInterview = await ctx.db
+            .insert(interviews)
+            .values({ userId: ctx.session.user.id })
+            .returning();
+        if (!newInterview[0]?.id) {
+            throw new TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+            });
+        }
+        return newInterview[0].id;
+    }),
 });
