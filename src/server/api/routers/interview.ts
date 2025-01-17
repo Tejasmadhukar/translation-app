@@ -39,7 +39,7 @@ export const InterviewRouter = createTRPCRouter({
                 code: "INTERNAL_SERVER_ERROR",
             });
         }
-        revalidatePath("/")
+        revalidatePath("/");
         return newInterview[0].id;
     }),
 });

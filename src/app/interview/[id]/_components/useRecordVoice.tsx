@@ -36,7 +36,7 @@ export const useRecordVoice = () => {
                     audio: base64data,
                 }),
             }).then((res) => res.json());
-            const { text } = response
+            const { text } = response;
             setText(text);
         } catch (error) {
             console.log(error);
@@ -74,10 +74,9 @@ export const useRecordVoice = () => {
     return { recording, startRecording, stopRecording, text };
 };
 
-
 const blobToBase64 = (blob, callback) => {
     const reader = new FileReader();
-    reader.onload = function() {
+    reader.onload = function () {
         const base64data = reader?.result?.split(",")[1];
         callback(base64data);
     };
@@ -88,8 +87,10 @@ const getPeakLevel = (analyzer) => {
     const array = new Uint8Array(analyzer.fftSize);
     analyzer.getByteTimeDomainData(array);
     return (
-        array.reduce((max, current) => Math.max(max, Math.abs(current - 127)), 0) /
-        128
+        array.reduce(
+            (max, current) => Math.max(max, Math.abs(current - 127)),
+            0,
+        ) / 128
     );
 };
 
