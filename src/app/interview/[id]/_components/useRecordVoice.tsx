@@ -2,12 +2,12 @@
 // @ts-nocheck
 import { useEffect, useState, useRef } from "react";
 
-export const useRecordVoice = () => {
-    const [text, setText] = useState("");
+export const useRecordVoice = ({ interviewId }: { interviewId: string }) => {
     const [mediaRecorder, setMediaRecorder] = useState(null);
     const [recording, setRecording] = useState(false);
     const isRecording = useRef(false);
     const chunks = useRef([]);
+    const [audioUrl, setAudioUrl] = useState<string | null>(null);
 
     const startRecording = () => {
         if (mediaRecorder) {
@@ -27,6 +27,9 @@ export const useRecordVoice = () => {
 
     const getText = async (base64data) => {
         try {
+            if (audioUrl) {
+                URL.revokeObjectURL(audioUrl);
+            }
             const response = await fetch("/api/send-message", {
                 method: "POST",
                 headers: {
@@ -34,10 +37,11 @@ export const useRecordVoice = () => {
                 },
                 body: JSON.stringify({
                     audio: base64data,
+                    interviewId,
                 }),
-            }).then((res) => res.json());
-            const { text } = response;
-            setText(text);
+            }).then((res) => res.blob());
+            const url = URL.createObjectURL(response);
+            setAudioUrl(url);
         } catch (error) {
             console.log(error);
         }
@@ -71,7 +75,15 @@ export const useRecordVoice = () => {
         }
     }, []);
 
-    return { recording, startRecording, stopRecording, text };
+    useEffect(() => {
+        return () => {
+            if (audioUrl) {
+                URL.revokeObjectURL(audioUrl);
+            }
+        };
+    }, [audioUrl]);
+
+    return { recording, startRecording, stopRecording, audioUrl };
 };
 
 const blobToBase64 = (blob, callback) => {

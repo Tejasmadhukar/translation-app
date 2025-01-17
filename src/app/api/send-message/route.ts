@@ -8,8 +8,8 @@ import { db } from "@/server/db";
 import { auth } from "@/server/auth";
 import { interviewMessages } from "@/server/db/schema";
 import { desc, eq } from "drizzle-orm";
-import { arrayBuffer } from "stream/consumers";
 
+console.log(env.OPENAI_API_KEY);
 const openai = new OpenAI({ apiKey: env.OPENAI_API_KEY });
 
 const interviewerPrompt =
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     //eslint-disable-next-line
     const base64Audio = body.audio;
     //eslint-disable-next-line
-    const interviewId = body.interviewId as string | undefined;
+    const interviewId = body.interviewId as string;
     if (!interviewId) return NextResponse.error();
 
     const messages = await db
@@ -66,6 +66,7 @@ export async function POST(req: NextRequest) {
     // Define the file path for storing the temporary WAV file
     const filename = `input-${Date.now()}.wav`;
     const filePath = path.join(tmpdir(), filename);
+    // const filePath = "tmp/input.wav";
 
     try {
         // Write the audio data to a temporary WAV file synchronously
@@ -81,8 +82,6 @@ export async function POST(req: NextRequest) {
 
         // Remove the temporary file after successful processing
         unlinkSync(filePath);
-
-        console.log(data.text);
 
         await addMessage(data.text, "user", interviewId);
         openaiMessages.push({ role: "user", content: data.text });

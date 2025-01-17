@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Mic, MicOff, X } from "lucide-react";
 import { useRecordVoice } from "./useRecordVoice";
+import { EndInterviewActiond } from "./end-interview-action";
+import { useRouter } from "next/navigation";
 
 export default function InterviewInterface({
     interviewId,
@@ -11,52 +13,32 @@ export default function InterviewInterface({
     interviewId: string;
 }) {
     const [isRecording, setIsRecording] = useState(false);
-    const [isAiSpeaking, setIsAiSpeaking] = useState(false);
     const [isThinking, setIsThinking] = useState(false);
+    const [isAiSpeaking, setIsAiSpeaking] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
-    const [audioUrl, setAudioUrl] = useState<string | null>(null);
+    const router = useRouter();
 
-    const { startRecording, stopRecording, text } = useRecordVoice();
+    const { startRecording, stopRecording, audioUrl } = useRecordVoice({
+        interviewId,
+    });
 
-    const handlePlay = async () => {
-        try {
-            setIsLoading(true);
-            setError(null);
-
-            // Clean up previous audio URL
-            if (audioUrl) {
-                URL.revokeObjectURL(audioUrl);
-            }
-
-            const arrayBuffer = await generateSpeech(text);
-            const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
-            const url = URL.createObjectURL(blob);
-
-            setAudioUrl(url);
-
-            if (audioRef.current) {
-                audioRef.current.src = url;
+    useEffect(() => {
+        async function playAudio() {
+            if (audioRef.current && audioUrl) {
+                audioRef.current.src = audioUrl;
+                setIsAiSpeaking(true);
                 await audioRef.current.play();
+                setIsAiSpeaking(false);
             }
-        } catch (err) {
-            setError(
-                err instanceof Error
-                    ? err.message
-                    : "Failed to generate speech",
-            );
-            console.error("Error generating speech:", err);
-        } finally {
-            setIsLoading(false);
         }
-    };
+        playAudio();
+    }, [audioUrl]);
 
-    const toggleRecording = () => {
+    const toggleRecording = async () => {
         if (isRecording) {
             // Stop recording and send audio to API
             setIsRecording(false);
-            setIsThinking(true);
             stopRecording();
-            setIsThinking(false);
         } else {
             // Start recording
             setIsRecording(true);
@@ -64,23 +46,23 @@ export default function InterviewInterface({
         }
     };
 
-    const endInterview = () => {
-        alert("Interview ended");
+    const endInterview = async () => {
+        await EndInterviewActiond(interviewId);
+        router.refresh();
     };
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100">
             <div
-                className={`mb-8 flex h-48 w-48 items-center justify-center rounded-full bg-gray-800 text-4xl ${isRecording ? "animate-pulse-green" : ""} ${isAiSpeaking ? "animate-pulse-blue" : ""} `}
+                className={`mb-8 flex h-48 w-48 items-center justify-center rounded-full bg-gray-300 text-4xl ${isRecording ? "animate-pulse-green" : ""} ${isAiSpeaking ? "animate-pulse-blue" : ""} `}
             >
                 AI
             </div>
 
             {isThinking && <p className="mb-4">Thinking...</p>}
-            {text && text.length > 0 && <p>{text}</p>}
 
             <div className="mb-8 flex space-x-4">
-                <Button onClick={toggleRecording}>
+                <Button onClick={toggleRecording} disabled={isAiSpeaking}>
                     {isRecording ? (
                         <Mic className="text-red-500" />
                     ) : (
@@ -92,11 +74,9 @@ export default function InterviewInterface({
                 </Button>
             </div>
 
-            <audio
-                ref={audioRef}
-                controls
-                onEnded={() => setIsAiSpeaking(false)}
-            />
+            <audio ref={audioRef} controls className="hidden" />
         </div>
     );
+
+    // return <MicrophoneComponent />
 }
