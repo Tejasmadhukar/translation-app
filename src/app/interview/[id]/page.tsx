@@ -8,11 +8,12 @@ export default async function InterviewPage({
     params: Promise<{ id: string }>;
 }) {
     const interviewId = (await params).id;
+    const interviewObject = await api.InterviewRouter.getById({ interviewId })
     const interviewMessages = await api.InterviewRouter.getAllMessages({
         interviewId,
     });
 
-    if (!interviewId) {
+    if (!interviewObject) {
         return <InterviewFail errorMessage="No intervew found with this ID." />;
     }
 

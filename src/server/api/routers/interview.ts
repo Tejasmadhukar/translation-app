@@ -9,6 +9,14 @@ export const InterviewRouter = createTRPCRouter({
         });
         return interviews;
     }),
+    getById: protectedProcedure
+        .input(z.object({ interviewId: z.string() }))
+        .query(async ({ input, ctx }) => {
+            const interview = await ctx.db.query.interviews.findFirst({
+                where: (i, { eq }) => eq(i.id, input.interviewId),
+            });
+            return interview;
+        }),
     getAllMessages: protectedProcedure
         .input(z.object({ interviewId: z.string() }))
         .query(async ({ input, ctx }) => {
